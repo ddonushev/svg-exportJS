@@ -8,11 +8,11 @@
  */
 
 (function (global, factory) {
-    /*global globalThis a*/ 
+    /*global globalThis a*/
     typeof exports === "object" && typeof module !== "undefined" ? factory(exports) :
-    typeof define === "function" && define.amd ? define(["exports"], factory) :
-    (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.svgExport = global.svgExport || {}));
-} (this, (function (exports) {
+        typeof define === "function" && define.amd ? define(["exports"], factory) :
+            (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.svgExport = global.svgExport || {}));
+}(this, (function (exports) {
     "use strict";
     var version = "1.0.0";
     var _options = {};
@@ -24,12 +24,12 @@
         if (typeof svg === "string") {
             div.insertAdjacentHTML("beforeend", svg.trim());
             svg = div.firstChild;
-        } 
-        
+        }
+
         if (!svg.nodeType || svg.nodeType !== 1) {
             //console.log("Error svg-export: The input svg was not recognized");
             return null;
-        } 
+        }
 
         var svgClone = svg.cloneNode(true);
         svgClone.style.display = null;
@@ -43,15 +43,14 @@
     }
 
     function setPdfOptions(options) {
-        if (options && options.pdfOptions)
-        {
-            Object.keys(_options.pdfOptions).forEach(function(opt) {
+        if (options && options.pdfOptions) {
+            Object.keys(_options.pdfOptions).forEach(function (opt) {
                 if (options.pdfOptions.hasOwnProperty(opt) && typeof options.pdfOptions[opt] === typeof _options.pdfOptions[opt]) {
                     if (options.pdfOptions[opt] === "") { return; }
                     _options.pdfOptions[opt] = options.pdfOptions[opt];
                 }
             });
-            
+
             if (!_options.pdfOptions.pageLayout.margin) {
                 _options.pdfOptions.pageLayout.margin = 50;
             }
@@ -63,27 +62,28 @@
         _options.pdfOptions.pageLayout.margins.bottom = _options.pdfOptions.pageLayout.margins.bottom || _options.pdfOptions.pageLayout.margin;
         _options.pdfOptions.pageLayout.margins.left = _options.pdfOptions.pageLayout.margins.left || _options.pdfOptions.pageLayout.margin;
         _options.pdfOptions.pageLayout.margins.right = _options.pdfOptions.pageLayout.margins.top || _options.pdfOptions.pageLayout.margin;
-        delete _options.pdfOptions.pageLayout.margin; 
+        delete _options.pdfOptions.pageLayout.margin;
         if (!(options && _options.pdfOptions.pageLayout.size)) {
             _options.pdfOptions.pageLayout.size = [
-                Math.max(300, _options.width) + _options.pdfOptions.pageLayout.margins.left + _options.pdfOptions.pageLayout.margins.right, 
+                Math.max(300, _options.width) + _options.pdfOptions.pageLayout.margins.left + _options.pdfOptions.pageLayout.margins.right,
                 Math.max(300, _options.height) + _options.pdfOptions.pageLayout.margins.top + _options.pdfOptions.pageLayout.margins.bottom +
-                    (_options.pdfOptions.addTitleToPage ? _options.pdfOptions.pdfTitleFontSize * 2 + 10: 0) + 
-                    (_options.pdfOptions.chartCaption !== "" ? _options.pdfOptions.pdfCaptionFontSize * 4 + 10: 0)
+                (_options.pdfOptions.addTitleToPage ? _options.pdfOptions.pdfTitleFontSize * 2 + 10 : 0) +
+                (_options.pdfOptions.chartCaption !== "" ? _options.pdfOptions.pdfCaptionFontSize * 4 + 10 : 0)
             ];
         }
     }
-    
+
     function setOptions(svgElement, options) {
         //initialize options
         _options = {
             originalWidth: 100,
             originalHeight: 100,
             width: 100,
-            height: 100, 
+            height: 100,
             scale: 1,
             useCSS: true,
             transparentBackgroundReplace: "white",
+            download: true,
             pdfOptions: {
                 customFonts: [],
                 pageLayout: { margin: 50, margins: {} },
@@ -96,12 +96,12 @@
         };
 
         //original size
-        _options.originalHeight = svgElement.style.getPropertyValue("height").indexOf("%") !== -1 
-            || (svgElement.getAttribute("height") && svgElement.getAttribute("height").indexOf("%") !== -1 )
+        _options.originalHeight = svgElement.style.getPropertyValue("height").indexOf("%") !== -1
+            || (svgElement.getAttribute("height") && svgElement.getAttribute("height").indexOf("%") !== -1)
             ? svgElement.getBBox().height * _options.scale
             : svgElement.getBoundingClientRect().height * _options.scale;
-        _options.originalWidth = svgElement.style.getPropertyValue("width").indexOf("%") !== -1 
-            || (svgElement.getAttribute("width") && svgElement.getAttribute("width").indexOf("%") !== -1 )
+        _options.originalWidth = svgElement.style.getPropertyValue("width").indexOf("%") !== -1
+            || (svgElement.getAttribute("width") && svgElement.getAttribute("width").indexOf("%") !== -1)
             ? svgElement.getBBox().width * _options.scale
             : svgElement.getBoundingClientRect().width * _options.scale;
 
@@ -120,7 +120,7 @@
         }
         else if (typeof options.width === "number") {
             _options.width = options.width * _options.scale;
-        } 
+        }
         if (options && options.useCSS === false) {
             _options.useCSS = false;
         }
@@ -132,28 +132,27 @@
     }
 
     function useCSSfromComputedStyles(element, elementClone) {
-        if (typeof getComputedStyle !== "function"){
+        if (typeof getComputedStyle !== "function") {
             //console.log("Warning svg-export: this browser is not able to get computed styles");
             return;
-        } 
-        element.childNodes.forEach(function(child, index){
+        }
+        element.childNodes.forEach(function (child, index) {
             if (child.nodeType === 1/*Node.ELEMENT_NODE*/) {
                 useCSSfromComputedStyles(child, elementClone.childNodes[parseInt(index, 10)]);
             }
         });
-        
+
         var compStyles = window.getComputedStyle(element);
         if (compStyles.length > 0) {
-            for (const compStyle of compStyles){
-                if (["width", "height", "inline-size", "block-size"].indexOf(compStyle) === -1 ) {
+            for (const compStyle of compStyles) {
+                if (["width", "height", "inline-size", "block-size"].indexOf(compStyle) === -1) {
                     elementClone.style.setProperty(compStyle, compStyles.getPropertyValue(compStyle));
                 }
             };
         }
     }
 
-    function setupSvg(svgElement, originalSvg, asString)
-    {
+    function setupSvg(svgElement, originalSvg, asString) {
         if (typeof asString === "undefined") { asString = true; }
         if (_options.useCSS && typeof originalSvg === "object") {
             useCSSfromComputedStyles(originalSvg, svgElement);
@@ -166,15 +165,14 @@
         svgElement.setAttribute("height", _options.height);
         svgElement.setAttribute("preserveAspectRatio", "none");
         svgElement.setAttribute("viewBox", "0 0 " + (_options.originalWidth) + " " + (_options.originalHeight));
-        
+
         var elements = document.getElementsByClassName("tempdiv-svg-exportJS");
-        while(elements.length > 0){
+        while (elements.length > 0) {
             elements[0].parentNode.removeChild(elements[0]);
         }
 
         //get svg string
-        if (asString)
-        {
+        if (asString) {
             var serializer = new XMLSerializer();
             //setting currentColor to black matters if computed styles are not used
             var svgString = serializer.serializeToString(svgElement).replace(/currentColor/g, "black");
@@ -186,7 +184,7 @@
             if (!svgString.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
                 svgString = svgString.replace(/^<svg/, "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
             }
-    
+
             return svgString;
         }
         return svgElement;
@@ -194,15 +192,15 @@
 
     function getCustomFonts(fontUrls) {
         var promises = [];
-        fontUrls.forEach(function(fontUrl) {
-            var promise = new Promise(function(resolve, reject) {
+        fontUrls.forEach(function (fontUrl) {
+            var promise = new Promise(function (resolve, reject) {
                 var req = new XMLHttpRequest();
-                req.onreadystatechange = function() { 
+                req.onreadystatechange = function () {
                     if (req.readyState === 4 && req.status === 200) {
                         resolve(req.response);
                     }
                 };
-                req.open("GET", fontUrl, true); 
+                req.open("GET", fontUrl, true);
                 req.responseType = "arraybuffer";
                 req.send(null);
             });
@@ -252,14 +250,13 @@
 
         //convert svg string to URI data scheme.
         var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
-
-        triggerDownload(url, svgName + ".svg");
+        if (options.download) triggerDownload(url, svgName + ".svg")
+        else return url
     }
 
     function downloadRaster(svg, svgName, options, imageType) {
         //check dependency and values
-        if (typeof canvg !== "object")
-        {
+        if (typeof canvg !== "object") {
             //console.log("Error svg-export: PNG/JPEG export requires Canvg.js");
             return;
         }
@@ -283,11 +280,10 @@
         }
         setOptions(svgElement, options);
         var svgString = setupSvg(svgElement, svg);
-        
-        if (imageType === "jpeg")
-        {
+
+        if (imageType === "jpeg") {
             //change transparent background to white
-            svgString = svgString.replace(">", "><rect x=\"0\" y=\"0\" width=\"" + _options.width + "\" height=\"" + _options.height 
+            svgString = svgString.replace(">", "><rect x=\"0\" y=\"0\" width=\"" + _options.width + "\" height=\"" + _options.height
                 + "\" fill=\"" + _options.transparentBackgroundReplace + "\"/>");
         }
 
@@ -295,7 +291,8 @@
         canvg.Canvg.fromString(ctx, svgString).start();
 
         var image = canvas.toDataURL("image/" + imageType);
-        triggerDownload(image, svgName + "." + imageType, canvas);
+        if (options.download) triggerDownload(image, svgName + "." + imageType, canvas)
+        else return image;
     }
     function downloadPng(svg, svgName, options) {
         downloadRaster(svg, svgName, options, "png");
@@ -306,33 +303,32 @@
 
     function fillPDFDoc(doc, svgName, svg) {
         // -title
-        if (_options.pdfOptions.addTitleToPage){
+        if (_options.pdfOptions.addTitleToPage) {
             doc.font(_options.pdfOptions.pdfTextFontFamily)
                 .fontSize(_options.pdfOptions.pdfTitleFontSize)
                 .text(svgName,
-                { 
-                    width: _options.pdfOptions.pageLayout.size[0] - _options.pdfOptions.pageLayout.margins.left - _options.pdfOptions.pageLayout.margins.right
-                });              
+                    {
+                        width: _options.pdfOptions.pageLayout.size[0] - _options.pdfOptions.pageLayout.margins.left - _options.pdfOptions.pageLayout.margins.right
+                    });
         }
         // -svg
-        SVGtoPDF(doc, svg, _options.pdfOptions.pageLayout.margins.left, doc.y + 10, 
+        SVGtoPDF(doc, svg, _options.pdfOptions.pageLayout.margins.left, doc.y + 10,
             { width: _options.width, height: _options.height, preserveAspectRatio: "none", useCSS: _options.useCSS });
 
         // -caption
-        if (_options.pdfOptions.chartCaption !== ""){
+        if (_options.pdfOptions.chartCaption !== "") {
             doc.font(_options.pdfOptions.pdfTextFontFamily)
                 .fontSize(_options.pdfOptions.pdfCaptionFontSize)
-                .text(_options.pdfOptions.chartCaption, _options.pdfOptions.pageLayout.margins.left, 
+                .text(_options.pdfOptions.chartCaption, _options.pdfOptions.pageLayout.margins.left,
                     _options.pdfOptions.pageLayout.size[1] - _options.pdfOptions.pageLayout.margins.bottom - _options.pdfOptions.pdfCaptionFontSize * 4,
-                { 
-                    width: _options.pdfOptions.pageLayout.size[0] - _options.pdfOptions.pageLayout.margins.left - _options.pdfOptions.pageLayout.margins.right
-                });              
+                    {
+                        width: _options.pdfOptions.pageLayout.size[0] - _options.pdfOptions.pageLayout.margins.left - _options.pdfOptions.pageLayout.margins.right
+                    });
         }
     }
     function downloadPdf(svg, svgName, options) {
         //check dependency and values
-        if (typeof PDFDocument !== "function" || typeof SVGtoPDF !== "function" || typeof blobStream !== "function")
-        {
+        if (typeof PDFDocument !== "function" || typeof SVGtoPDF !== "function" || typeof blobStream !== "function") {
             //console.log("Error svg-export: PDF export requires PDFKit.js, blob-stream and SVG-to-PDFKit");
             return;
         }
@@ -349,16 +345,16 @@
         //create PDF doc
         var doc = new PDFDocument(_options.pdfOptions.pageLayout);
         var stream = doc.pipe(blobStream());
-        
+
         // -custom fonts
-        if (_options.pdfOptions.customFonts.length > 0){
-            var promises = getCustomFonts(_options.pdfOptions.customFonts.map(function(d) { return d.url; }));
-            Promise.all(promises).then(function(fonts) {
-                fonts.forEach(function(font, index) {
+        if (_options.pdfOptions.customFonts.length > 0) {
+            var promises = getCustomFonts(_options.pdfOptions.customFonts.map(function (d) { return d.url; }));
+            Promise.all(promises).then(function (fonts) {
+                fonts.forEach(function (font, index) {
                     var thisPdfOptions = _options.pdfOptions.customFonts[parseInt(index, 10)];
                     //this ensures that the font fallbacks are removed from inline CSS that contain custom fonts, as fonts with fallbacks are not parsed correctly by SVG-to-PDFKit
-                    var fontStyledElements = svgCloned.querySelectorAll("[style*=\"" +thisPdfOptions.fontName + "\"]");
-                    fontStyledElements.forEach(function(element) {
+                    var fontStyledElements = svgCloned.querySelectorAll("[style*=\"" + thisPdfOptions.fontName + "\"]");
+                    fontStyledElements.forEach(function (element) {
                         element.style.fontFamily = thisPdfOptions.fontName;
                     });
                     if ((thisPdfOptions.url.indexOf(".ttc") !== -1 || thisPdfOptions.url.indexOf(".dfont") !== -1) && thisPdfOptions.styleName) {
@@ -376,7 +372,7 @@
             doc.end();
         }
 
-        stream.on("finish", function() {
+        stream.on("finish", function () {
             var url = stream.toBlobURL("application/pdf");
             triggerDownload(url, svgName + ".pdf");
         });
