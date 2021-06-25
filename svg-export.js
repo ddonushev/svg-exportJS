@@ -295,7 +295,7 @@
         else return image;
     }
     function downloadPng(svg, svgName, options) {
-        downloadRaster(svg, svgName, options, "png");
+        return downloadRaster(svg, svgName, options, "png");
     }
     function downloadJpeg(svg, svgName, options) {
         downloadRaster(svg, svgName, options, "jpeg");
